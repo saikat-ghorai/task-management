@@ -1,46 +1,58 @@
 import asyncHandler from 'express-async-handler';
-import blogModel from '../models/blogModel.js';
-import userModel from '../models/userModel.js';
+import { Task } from '../models/taskModel.js';
+import { User } from '../models/userModel.js';
 
-const createBlog = asyncHandler(async({ title, description, bodyContent, blogImage, imageTag, blogTag, blogCategory, createdBy, isPublic }) => {
-    // console.log(title, description, bodyContent, blogImage, imageTag, blogTag, blogCategory, createdBy, isPublic);
-    if(!title || !description || !bodyContent || !blogImage || !blogTag || !blogCategory || !createdBy){
-        let error = new Error('All fields are required');
-        error.statusCode = 422;
+const ALLOWED_TRANSITIONS = {
+    pending: ['in_progress'],
+    in_progress: ['completed', 'failed']
+};
+
+const getTasksForNode = asyncHandler(async (nodeId) => {
+    logger.info('Fetching tasks', { nodeId });
+    const tasks = await Task.findAll({ where: { assigned_node_id: nodeId } });
+
+    if (!tasks) {
+        let error = new Error('No task found!');
+        error.statusCode = 404;
         throw error;
     }
 
-    const userDetails = await userModel.findOne({_id: createdBy});
-    if(!userDetails){
-        let error = new Error('Please try again!');
-        error.statusCode = 402;
-        throw error;
-    }
-    const writerName = userDetails.middleName == ''? userDetails.firstName + ' ' + userDetails.lastName : userDetails.firstName + ' ' + userDetails.middleName + ' ' + userDetails.lastName;
+    return tasks;
+});
 
-    const blogDetails = await blogModel.create({ title, description, bodyContent, blogImage, imageTag, blogTag, blogCategory, createdBy, writerName, isPublic });
-    if(!blogDetails){
-        let error = new Error('Please try again!');
-        error.statusCode = 500;
-        throw error;
-    }
-    return blogDetails;
-})
+const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
+    const task = await Task.findByPk(taskId);
 
-const updateBlog = asyncHandler(async(condition, updateData) => {
-    if(!condition || !updateData || condition.length === 0 || updateData.length === 0){
-        let error = new Error('Please try again!');
-        error.statusCode = 402;
+    if (!task) {
+        let error = new Error('Task not found!');
+        error.statusCode = 404;
         throw error;
     }
 
-    const blogDetails = await blogModel.updateOne(condition, updateData);
-    if(!blogDetails || blogDetails.length === 0){
-        let error = new Error('Please try again!');
-        error.statusCode = 500;
+    if (task.assigned_node_id !== nodeId) {
+        let error = new Error('You don\'t have permission to update the status!');
+        error.statusCode = 403;
         throw error;
     }
-    return true;
-})
 
-export { createBlog, updateBlog }
+    if (task.status === newStatus) return task;
+
+    if (!ALLOWED_TRANSITIONS[task.status]?.includes(newStatus)) {
+        let error = new Error('Invalid status transition!');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    task.status = newStatus;
+    await task.save();
+
+    logger.info('Updating task status', {
+        taskId,
+        from: task.status,
+        to: newStatus
+    });
+
+    return task;
+});
+
+export { getTasksForNode, updateTaskStatus }

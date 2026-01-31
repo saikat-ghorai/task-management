@@ -11,6 +11,7 @@
   "author": "Saikat Ghorai",
   "license": "ISC",
   "dependencies": {
+    "argon2": "^0.44.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.2.1",
@@ -20,7 +21,7 @@
     "mysql2": "^3.16.2",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.5",
-    "uuid": "^11.1.0",
+    "uuid": "^13.0.0",
     "winston": "^3.19.0"
   }
 }

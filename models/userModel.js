@@ -1,32 +1,34 @@
-import { sequelize } from '../config/database';
+import { sequelize } from '../config/dbConnection.js';
 import { DataTypes } from 'sequelize';
 
-const User = () => {
-  return sequelize.define('User', {
-    id: {
-      type: DataTypes.STRING(64),
-      primaryKey: true
-    },
-    role: {
-      type: DataTypes.ENUM('admin', 'node'),
-      allowNull: false
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    secret: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true
-    }
-  }, {
-    tableName: 'users',
-    timestamps: true
-  });
-};
+const userModel = sequelize.define('User', {
+  id: {
+    type: DataTypes.STRING(64),
+    primaryKey: true
+  },
+  role: {
+    type: DataTypes.ENUM('admin', 'node'),
+    allowNull: false
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  username: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  secret: {
+    type: DataTypes.STRING(500),
+    allowNull: false
+  },
+  active: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true
+  }
+}, {
+  tableName: 'users',
+  timestamps: true
+});
 
-export { User };
+export default userModel;

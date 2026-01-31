@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
     await queryInterface.createTable('users', {
       id: {
         type: Sequelize.STRING(64),
@@ -12,12 +12,16 @@ export default {
         type: Sequelize.ENUM('admin', 'node'),
         allowNull: false
       },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
       username: {
         type: Sequelize.STRING,
         allowNull: false
       },
       secret: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(500),
         allowNull: false
       },
       active: {
@@ -29,7 +33,7 @@ export default {
     });
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('users');
   }
 };
