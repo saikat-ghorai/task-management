@@ -13,13 +13,19 @@ const errorHandler = (error, req, res, next) => {
             title = "Forbidden access";
             break;
         case 404:
-            title = "Not Found";
+            title = "Not found";
+            break;
+        case 408:
+            title = "Request timeout";
+            break;
+        case 409:
+            title = "Conflicte error";
             break;
         case 422:
-            title = "Unprocessable Content";
+            title = "Unprocessable content";
             break;
         case 500:
-            title = "Server Error";
+            title = "Server error";
             break;
     }
     res.status(errorStatus).json({

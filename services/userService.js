@@ -19,7 +19,7 @@ const findUserByMail = asyncHandler(async (email) => {
         throw error
     }
 
-    const userDetails = await userModel.findOne({ where: { username: email } });
+    const userDetails = await userModel.findOne({ where: { username: email }});
     return userDetails;
 })
 
@@ -30,7 +30,7 @@ const findUserById = asyncHandler(async (userId) => {
         throw error
     }
 
-    const userDetails = await userModel.findByPk(userId);
+    const userDetails = await userModel.findOne({ where: { id: userId, active: 1 }});
     return userDetails;
 })
 

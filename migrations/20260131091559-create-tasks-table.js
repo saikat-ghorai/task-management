@@ -4,11 +4,11 @@
 export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('tasks', {
-      task_id: {
+      id: {
         type: Sequelize.STRING(64),
         primaryKey: true
       },
-      task_type: Sequelize.STRING,
+      task_name: Sequelize.STRING,
       task_details: Sequelize.JSON,
       assigned_node_id: {
         type: Sequelize.STRING(64),
@@ -30,6 +30,10 @@ export default {
         defaultValue: 'pending'
       },
       locked_at: Sequelize.DATE,
+      active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
+      },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE
     });
