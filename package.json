@@ -1,0 +1,26 @@
+{
+  "name": "task-management",
+  "version": "1.0.0",
+  "description": "It's a task management app backend",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch server.js"
+  },
+  "author": "Saikat Ghorai",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.2.1",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.16.2",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.5",
+    "uuid": "^11.1.0",
+    "winston": "^3.19.0"
+  }
+}
