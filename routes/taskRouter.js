@@ -2,7 +2,7 @@ import { Router } from "express";
 import { createTaskValidator, updateTaskValidator, updateTaskStatusValidator, assignTaskValidator } from "../validators/taskValidator.js";
 import runValidation from "../validators/index.js";
 import authHandler from "../middlewares/authHandler.js";
-import { getAllTasks, getNodeTasks, filterTasksByStatus, getTaskDetail, updateStatus, newTask, editTask, assignTaskToNode, binTask } from '../controllers/taskController.js';
+import { getAllTasks, getNodeTasks, filterTasksByStatus, getTaskDetail, getTaskHistory, updateStatus, newTask, editTask, assignTaskToNode, binTask } from '../controllers/taskController.js';
 
 const taskRouter = Router();
 
@@ -10,6 +10,7 @@ taskRouter.get('/', authHandler, getNodeTasks);
 taskRouter.get('/all', authHandler, getAllTasks);
 taskRouter.get('/filter/:taskStatus', authHandler, filterTasksByStatus);
 taskRouter.get('/:taskId', authHandler, getTaskDetail);
+taskRouter.get('/history/:taskId', authHandler, getTaskHistory);
 taskRouter.post('/', authHandler, createTaskValidator, runValidation, newTask);
 taskRouter.put('/', authHandler, updateTaskValidator, runValidation, editTask);
 taskRouter.put('/shift-status', authHandler, updateTaskStatusValidator, runValidation, updateStatus);

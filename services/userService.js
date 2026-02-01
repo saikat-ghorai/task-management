@@ -23,7 +23,7 @@ const findUserByMail = asyncHandler(async (email) => {
     return userDetails;
 })
 
-const findUserById = asyncHandler(async (userId) => {
+const findUserById = asyncHandler(async (userId, selectedFields = ['id', 'name', ['username', 'email'], 'role']) => {
     if (!userId) {
         let error = new Error('All fields are required')
         error.statusCode = 400
@@ -32,7 +32,7 @@ const findUserById = asyncHandler(async (userId) => {
 
     const userDetails = await userModel.findOne({ 
         where: { id: userId, active: 1 },
-        attributes: ['id', 'name', ['username', 'email'], 'role'] 
+        attributes:  selectedFields
     });
     return userDetails;
 })
@@ -52,4 +52,16 @@ const findActiveUsers = asyncHandler(async () => {
     return usersList;
 })
 
-export { createUser, findUserByMail, findUserById, findActiveUsers }
+const updateUserDetails = asyncHandler( async(updates, condition) => {
+    if(!updates || !condition){
+        let error = new Error('All fields are required')
+        error.statusCode = 400
+        throw error
+    }
+
+    const user = await userModel.update(updates, condition);
+
+    return user;
+})
+
+export { createUser, findUserByMail, findUserById, findActiveUsers, updateUserDetails }

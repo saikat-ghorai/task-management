@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { v4 as uuidv4 } from 'uuid';
 import { createTask, updateTask, getTasksByStatus, getTaskDetails, updateTaskStatus, assignTask, deleteTask } from '../services/taskService.js';
+import { getTaskHistoryByTaskId } from '../services/taskHistoryService.js';
 
 // @desc    Get all tasks with pagination
 // @route   GET/api/tasks/all
@@ -9,6 +10,12 @@ import { createTask, updateTask, getTasksByStatus, getTaskDetails, updateTaskSta
 const getAllTasks = asyncHandler(async (req, res) => {
     const { cursor, limit } = req.query;
     let dataCount = parseInt(limit) || 10;
+    const userRole = req.userRole;
+    if(userRole !== 'admin'){
+        let error = new Error('You don\'t have permission!');
+        error.statusCode = 403;
+        throw error;
+    }
 
     const {data, nextCursor} = await getTasksByStatus('all', null, dataCount, cursor);
 
@@ -65,6 +72,27 @@ const getTaskDetail = asyncHandler(async (req, res) => {
     res.status(200).json({
         message: 'Sucess',
         details: taskDetails
+    })
+})
+
+// @desc    Get history of a task
+// @route   GET/api/tasks/history/:taskId
+// @access  Privte(Admin)
+const getTaskHistory = asyncHandler(async (req, res) => {
+    const taskId = req.params.taskId;
+    const userRole = req.userRole;
+    if(userRole !== 'admin'){
+        let error = new Error('You don\'t have permission!');
+        error.statusCode = 403;
+        throw error;
+    }
+    const userId = req.userRole === 'admin'? null : req.userId;
+    const taskDetails = await getTaskDetails(taskId, userId);
+    const taskHistory = await getTaskHistoryByTaskId(taskId);
+
+    res.status(200).json({
+        message: 'Sucess',
+        history: taskHistory
     })
 })
 
@@ -166,4 +194,4 @@ const binTask = asyncHandler(async (req, res) => {
     })
 })
 
-export { getAllTasks, getNodeTasks, filterTasksByStatus, getTaskDetail, updateStatus, newTask, editTask, assignTaskToNode, binTask }
+export { getAllTasks, getNodeTasks, filterTasksByStatus, getTaskDetail, getTaskHistory, updateStatus, newTask, editTask, assignTaskToNode, binTask }

@@ -2,9 +2,10 @@ import asyncHandler from 'express-async-handler';
 import { v4 as uuidv4 } from 'uuid';
 import * as argon2 from 'argon2';
 import jwt from "jsonwebtoken";
-import { createUser, findUserByMail, findUserById, findActiveUsers } from '../services/userService.js';
+import { createUser, findUserByMail, findUserById, findActiveUsers, updateUserDetails } from '../services/userService.js';
 import { getTasksByStatus } from '../services/taskService.js';
 import logger from '../config/logger.js';
+import { selectFields } from 'express-validator/lib/field-selection.js';
 
 // @desc    Log in to user account
 // @route   POST/api/auth/login
@@ -20,7 +21,7 @@ const signin = asyncHandler(async (req, res) => {
         throw error;
     }
 
-    if(userDetails.active != 1){
+    if (userDetails.active != 1) {
         const error = new Error('Access denied. Please contact admin!');
         error.statusCode = 403;
         throw error;
@@ -35,7 +36,7 @@ const signin = asyncHandler(async (req, res) => {
         throw error;
     }
 
-    const token = jwt.sign({ userRow: userDetails.id, type: userDetails.role }, process.env.JWT_SECRET, { expiresIn: '50000s' });
+    const token = jwt.sign({ userRow: userDetails.id, type: userDetails.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     logger.info('Login success', {
         user: userDetails.email
     });
@@ -57,7 +58,7 @@ const signin = asyncHandler(async (req, res) => {
 // @params  name*, email*, password*
 const signup = asyncHandler(async (req, res) => {
     const userRole = req.userRole;
-    if(userRole !== 'admin'){
+    if (userRole !== 'admin') {
         let error = new Error('You don\'t have permission!');
         error.statusCode = 403;
         throw error;
@@ -75,8 +76,8 @@ const signup = asyncHandler(async (req, res) => {
     const userId = uuidv4();
     const role = 'node';
     const user = await createUser({ userId, name, email, role, password: hashPassword })
-    
-    logger.info('New account created', {email, name});
+
+    logger.info('New account created', { email, name });
 
     res.status(200).json({
         message: 'Thank you for joining Task Manager',
@@ -112,9 +113,9 @@ const userProfile = asyncHandler(async (req, res) => {
 // @desc    Fetch all the active users list
 // @route   GET/api/auth/users/
 // @access  Private(Admin)
-const getUserList = asyncHandler(async(req, res) => {
+const getUserList = asyncHandler(async (req, res) => {
     const userRole = req.userRole;
-    if(userRole !== 'admin'){
+    if (userRole !== 'admin') {
         let error = new Error('You don\'t have permission!');
         error.statusCode = 403;
         throw error;
@@ -125,4 +126,68 @@ const getUserList = asyncHandler(async(req, res) => {
         usersList: users
     });
 })
-export { signin, signup, userProfile, getUserList }
+
+// @desc    Edit user profile
+// @route   PUT/api/auth/edit-profile/
+// @access  Private(Admin/Node)
+// @params  name*, email*
+const editProfile = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { name, email } = req.body;
+    const updates = { name, username: email };
+    const condition = {
+        where: {
+            id : userId,
+            active: 1
+        }
+    }
+
+    const user = await updateUserDetails(updates, condition);
+    logger.info('User details updated', {user: userId});
+    res.status(200).json({
+        title: 'Success',
+        message: 'Details updated successfully'
+    });
+})
+
+// @desc    Change user password
+// @route   PUT/api/auth/update-password/
+// @access  Private(Admin/Node)
+// @params  oldPassword*, newPassword*
+const changePassword = asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    const { oldPassword, newPassword } = req.body;
+    const selectedFields = ['id', 'secret'];
+    if(oldPassword == newPassword){        
+        let error = new Error('New password should be different!');
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const userDetails = await findUserById(userId, selectedFields);
+    if (!await argon2.verify(userDetails.secret, oldPassword)) {
+        logger.info('Failed change password attempt', {
+            user: userId
+        });
+        let error = new Error('Worng password provided!');
+        error.statusCode = 401;
+        throw error;
+    }
+    const hashPassword = await argon2.hash(newPassword, 10);
+    const updates = { secret: hashPassword };
+    const condition = {
+        where: {
+            id : userId,
+            active: 1
+        }
+    }
+    
+    const user = await updateUserDetails(updates, condition);
+    logger.info('User password changed', {user: userId});
+    res.status(200).json({
+        title: 'Success',
+        message: 'Password updated successfully'
+    });
+})
+
+export { signin, signup, userProfile, getUserList, editProfile, changePassword }

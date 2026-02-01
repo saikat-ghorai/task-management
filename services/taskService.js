@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import taskModel from '../models/taskModel.js';
 import userModel from '../models/userModel.js';
 import { encodeCursor, decodeCursor } from '../helpers/cursorHelper.js';
+import { createTaskHistory, createBulkTaskHistory } from './taskHistoryService.js';
 import logger from '../config/logger.js';
 import { Op } from 'sequelize';
 
@@ -17,7 +18,7 @@ const createTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
         throw error
     }
     const userDetails = await userModel.findOne({ where: { id: assignedNode, active: 1 } });
-    if (userDetails.length === 0) {
+    if (!userDetails) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
@@ -32,6 +33,13 @@ const createTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
         lockedAt
     });
 
+    await createTaskHistory({
+        taskId: taskId,
+        actionType: 'initial_assign',
+        toValue: assignedNode,
+        performedBy: 'admin'
+    });
+
     return task;
 })
 
@@ -43,7 +51,7 @@ const updateTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
     }
 
     const details = await taskModel.findOne({ where: { id: taskId, active: 1 } })
-    if (!details || details.length === 0) {
+    if (!details) {
         let error = new Error('Task not found!')
         error.statusCode = 404
         throw error
@@ -52,10 +60,20 @@ const updateTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
     if (details.status !== 'pending') return details;
 
     const userDetails = await userModel.findOne({ where: { id: assignedNode, active: 1 } });
-    if (userDetails.length === 0) {
+    if (!userDetails) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
+    }
+
+    if (details.assigned_node_id != assignedNode) {
+        await createTaskHistory({
+            taskId: taskId,
+            actionType: 'assignee_change',
+            fromValue: details.assigned_node_id,
+            toValue: assignedNode,
+            performedBy: 'admin'
+        });
     }
 
     details.task_name = taskName;
@@ -123,7 +141,7 @@ const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limi
     const tasks = await taskModel.findAll(queryOptions);
 
     if (tasks.length === 0) {
-        if(returnBlank) return [];
+        if (returnBlank) return [];
         let error = new Error('No task found!');
         error.statusCode = 404;
         throw error;
@@ -150,14 +168,14 @@ const getTaskDetails = asyncHandler(async (taskId = null, userId = null) => {
         throw error;
     }
     const taskDetails = await taskModel.findOne({ where: { id: taskId, active: 1 } });
-    
-    if (taskDetails.length === 0) {
+
+    if (!taskDetails) {
         let error = new Error('No task found!');
         error.statusCode = 404;
         throw error;
     }
 
-    if(userId != null && userId != taskDetails.assigned_node_id){
+    if (userId != null && userId != taskDetails.assigned_node_id) {
         let error = new Error('You don\'t have permission!');
         error.statusCode = 403;
         throw error;
@@ -169,7 +187,7 @@ const getTaskDetails = asyncHandler(async (taskId = null, userId = null) => {
 const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
     const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
-    if (task.length === 0) {
+    if (!task) {
         let error = new Error('Task not found!');
         error.statusCode = 404;
         throw error;
@@ -195,6 +213,14 @@ const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
         throw error;
     }
 
+    await createTaskHistory({
+        taskId: task.id,
+        actionType: 'status_change',
+        fromValue: task.status,
+        toValue: newStatus,
+        performedBy: nodeId
+    });
+
     task.status = newStatus;
     task.updated_at = new Date();
     await task.save();
@@ -210,6 +236,20 @@ const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
 
 const markExpiredTasksAsFailed = asyncHandler(async () => {
     const now = new Date();
+    const expiredTasks = await taskModel.findAll({
+        where: {
+            status: {
+                [Op.in]: ['pending', 'in_progress']
+            },
+            locked_at: {
+                [Op.lt]: now
+            },
+            active: 1
+        }
+    });
+
+    if (expiredTasks.length === 0) return [];
+    const taskIds = expiredTasks.map(task => task.id);
 
     const [affectedCount] = await taskModel.update(
         {
@@ -218,16 +258,24 @@ const markExpiredTasksAsFailed = asyncHandler(async () => {
         },
         {
             where: {
-                status: {
-                    [Op.in]: ['pending', 'in_progress']
-                },
-                locked_at: {
-                    [Op.lt]: now
-                },
-                active: 1
+                id: {
+                    [Op.in]: taskIds
+                }
             }
         }
     );
+
+    const historyRecords = expiredTasks.map(task => ({
+        id: uuidv4(),
+        task_id: task.id,
+        action_type: 'status_change',
+        from_value: task.status,
+        to_value: 'failed',
+        performed_by: 'system',
+        createdAt: now
+    }));
+
+    await createBulkTaskHistory(historyRecords);
 
     logger.info('Expired tasks marked as failed', {
         affectedCount
@@ -239,13 +287,13 @@ const markExpiredTasksAsFailed = asyncHandler(async () => {
 const assignTask = asyncHandler(async (taskId, nodeId) => {
     const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
-    if (task.length === 0) {
+    if (!task) {
         let error = new Error('Task not found!');
         error.statusCode = 404;
         throw error;
     }
     const userDetails = await userModel.findOne({ where: { id: nodeId, active: 1 } });
-    if (userDetails.length === 0) {
+    if (!userDetails) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
@@ -263,13 +311,21 @@ const assignTask = asyncHandler(async (taskId, nodeId) => {
         to: nodeId
     });
 
+    await createTaskHistory({
+        taskId: taskId,
+        actionType: 'assignee_change',
+        fromValue: oldAssignee,
+        toValue: nodeId,
+        performedBy: 'admin'
+    });
+
     return task;
 })
 
 const deleteTask = asyncHandler(async (taskId, nodeId) => {
     const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
-    if (task.length === 0) {
+    if (!task) {
         let error = new Error('Task not found!');
         error.statusCode = 404;
         throw error;
