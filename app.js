@@ -6,6 +6,7 @@ import errorHandler from './middlewares/errorHandler.js';
 import initialRouter from './routes/initialRouter.js';
 import authRouter from './routes/authRouter.js';
 import taskRouter from './routes/taskRouter.js';
+import cronRouter from './routes/cronRouter.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/", initialRouter);
 app.use("/api", initialRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/tasks', taskRouter);
+app.use('/cron', cronRouter);
 
 app.use((req, res, error) => {
     return res.status(404).json({ title: 'Not found!', message: 'No API found!' });

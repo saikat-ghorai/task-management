@@ -16,8 +16,8 @@ const createTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
         error.statusCode = 400
         throw error
     }
-    const userDetails = await userModel.findOne({where: { id: assignedNode, active: 1 }});
-    if (userDetails, length === 0) {
+    const userDetails = await userModel.findOne({ where: { id: assignedNode, active: 1 } });
+    if (userDetails.length === 0) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
@@ -42,17 +42,17 @@ const updateTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
         throw error
     }
 
-    const details = await taskModel.findOne({ where: { id: taskId, active: 1}})
-    if (details.length === 0) {
+    const details = await taskModel.findOne({ where: { id: taskId, active: 1 } })
+    if (!details || details.length === 0) {
         let error = new Error('Task not found!')
         error.statusCode = 404
         throw error
     }
 
-    if (details.status !== 'pending') return task;
+    if (details.status !== 'pending') return details;
 
-    const userDetails = await userModel.findOne({where: { id: assignedNode, active: 1 }});
-    if (userDetails === 0) {
+    const userDetails = await userModel.findOne({ where: { id: assignedNode, active: 1 } });
+    if (userDetails.length === 0) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
@@ -76,70 +76,7 @@ const updateTask = asyncHandler(async ({ taskId, taskName, taskDetails, assigned
     return details;
 })
 
-const getTasksForNode = asyncHandler(async (nodeId, limit = 20, cursor = null) => {
-    const whereClause = {
-        assigned_node_id: nodeId,
-        active: 1,
-        locked_at: {
-            [Op.lt]: new Date()
-        }
-    };
-
-    if (cursor) {
-        const decoded = decodeCursor(cursor);
-
-        whereClause[Op.or] = [
-            {
-                createdAt: {
-                    [Op.lt]: decoded.createdAt
-                }
-            },
-            {
-                createdAt: decoded.createdAt,
-                locked_at: {
-                    [Op.lt]: decoded.locked_at
-                }
-            },
-            {
-                createdAt: decoded.createdAt,
-                locked_at: decoded.locked_at,
-                id: {
-                    [Op.lt]: decoded.id
-                }
-            }
-        ];
-    }
-    const tasks = await taskModel.findAll({
-        where: whereClause,
-        order: [
-            ['createdAt', 'DESC'],
-            ['locked_at', 'DESC'],
-            ['id', 'DESC']
-        ],
-        limit: limit + 1
-    });
-
-    if (tasks.length === 0) {
-        let error = new Error('No task found!');
-        error.statusCode = 404;
-        throw error;
-    }
-
-    let nextCursor = null;
-
-    if (tasks.length > limit) {
-        const lastTask = tasks.pop();
-        const cursorContent = { createdAt: lastTask.createdAt, locked_at: lastTask.locked_at, id: lastTask.id }
-        nextCursor = encodeCursor(cursorContent);
-    }
-
-    return {
-        data: tasks,
-        nextCursor
-    };
-})
-
-const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limit = 20, cursor = null) => {
+const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limit = null, cursor = null, returnBlank = false) => {
     const whereClause = {}
     whereClause.active = 1;
     if (status !== 'all') {
@@ -152,39 +89,41 @@ const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limi
 
     if (cursor) {
         const decoded = decodeCursor(cursor);
-
+        console.log(decoded);
         whereClause[Op.or] = [
             {
                 createdAt: {
-                    [Op.lt]: decoded.createdAt
+                    [Op.lte]: decoded.createdAt
                 }
             },
             {
                 createdAt: decoded.createdAt,
                 locked_at: {
-                    [Op.lt]: decoded.locked_at
-                }
-            },
-            {
-                createdAt: decoded.createdAt,
-                locked_at: decoded.locked_at,
-                id: {
-                    [Op.lt]: decoded.id
+                    [Op.lte]: decoded.locked_at
                 }
             }
         ];
     }
-    const tasks = await taskModel.findAll({
+
+    const queryOptions = {
         where: whereClause,
         order: [
             ['createdAt', 'DESC'],
             ['locked_at', 'DESC'],
-            ['id', 'DESC']
         ],
-        limit: limit + 1
-    });
+        attributes: {
+            exclude: ['updatedAt']
+        }
+    };
+
+    if (limit) {
+        queryOptions.limit = limit + 1;
+    }
+    console.log(limit);
+    const tasks = await taskModel.findAll(queryOptions);
 
     if (tasks.length === 0) {
+        if(returnBlank) return [];
         let error = new Error('No task found!');
         error.statusCode = 404;
         throw error;
@@ -192,9 +131,9 @@ const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limi
 
     let nextCursor = null;
 
-    if (tasks.length > limit) {
+    if (limit != null && tasks.length > limit) {
         const lastTask = tasks.pop();
-        const cursorContent = { createdAt: lastTask.createdAt, locked_at: lastTask.locked_at, id: lastTask.id }
+        const cursorContent = { createdAt: lastTask.createdAt, locked_at: lastTask.locked_at }
         nextCursor = encodeCursor(cursorContent);
     }
 
@@ -204,17 +143,23 @@ const getTasksByStatus = asyncHandler(async (status = 'all', nodeId = null, limi
     };
 })
 
-const getTaskDetails = asyncHandler(async (taskId = null) => {
+const getTaskDetails = asyncHandler(async (taskId = null, userId = null) => {
     if (!taskId) {
         let error = new Error('Task id needed!');
         error.statusCode = 400;
         throw error;
     }
-    const taskDetails = await taskModel.findOne({ where: { id: taskId, active: 1}});
-
+    const taskDetails = await taskModel.findOne({ where: { id: taskId, active: 1 } });
+    
     if (taskDetails.length === 0) {
         let error = new Error('No task found!');
         error.statusCode = 404;
+        throw error;
+    }
+
+    if(userId != null && userId != taskDetails.assigned_node_id){
+        let error = new Error('You don\'t have permission!');
+        error.statusCode = 403;
         throw error;
     }
 
@@ -222,7 +167,7 @@ const getTaskDetails = asyncHandler(async (taskId = null) => {
 })
 
 const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
-    const task = await taskModel.findOne({ where: { id: taskId, active: 1}});
+    const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
     if (task.length === 0) {
         let error = new Error('Task not found!');
@@ -238,15 +183,15 @@ const updateTaskStatus = asyncHandler(async (taskId, nodeId, newStatus) => {
 
     if (task.status === newStatus) return task;
 
-    if (task.locked_at && task.locked_at < new Date()) {
-        let error = new Error('Task time expired!');
-        error.statusCode = 409;
-        throw error;
-    }
-
     if (!ALLOWED_TRANSITIONS[task.status]?.includes(newStatus)) {
         let error = new Error('Invalid status transition!');
         error.statusCode = 400;
+        throw error;
+    }
+
+    if (task.locked_at && task.locked_at < new Date()) {
+        let error = new Error('Task time expired!');
+        error.statusCode = 409;
         throw error;
     }
 
@@ -292,15 +237,15 @@ const markExpiredTasksAsFailed = asyncHandler(async () => {
 })
 
 const assignTask = asyncHandler(async (taskId, nodeId) => {
-    const task = await taskModel.findOne({ where: { id: taskId, active: 1}});
+    const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
     if (task.length === 0) {
         let error = new Error('Task not found!');
         error.statusCode = 404;
         throw error;
     }
-    const userDetails = await userModel.findOne({where: { id: nodeId, active: 1 }});
-    if (userDetails, length === 0) {
+    const userDetails = await userModel.findOne({ where: { id: nodeId, active: 1 } });
+    if (userDetails.length === 0) {
         let error = new Error('User not found!')
         error.statusCode = 404
         throw error
@@ -322,7 +267,7 @@ const assignTask = asyncHandler(async (taskId, nodeId) => {
 })
 
 const deleteTask = asyncHandler(async (taskId, nodeId) => {
-    const task = await taskModel.findOne({ where: { id: taskId, active: 1}});
+    const task = await taskModel.findOne({ where: { id: taskId, active: 1 } });
 
     if (task.length === 0) {
         let error = new Error('Task not found!');
@@ -341,4 +286,4 @@ const deleteTask = asyncHandler(async (taskId, nodeId) => {
     return task;
 })
 
-export { createTask, updateTask, getTasksForNode, getTasksByStatus, getTaskDetails, updateTaskStatus, markExpiredTasksAsFailed, assignTask, deleteTask }
+export { createTask, updateTask, getTasksByStatus, getTaskDetails, updateTaskStatus, markExpiredTasksAsFailed, assignTask, deleteTask }

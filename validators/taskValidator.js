@@ -13,6 +13,16 @@ const createTaskValidator = [
     body("lockedAt")
         .trim()
         .notEmpty().withMessage('Task lock time can\'t be empty')
+        .custom((value) => {
+            const lockTime = new Date(value);
+            const now = new Date();
+
+            if (lockTime <= now) {
+                throw new Error('Task lock time must be in the future');
+            }
+
+            return true;
+        })
 ];
 
 const updateTaskValidator = [
@@ -31,6 +41,16 @@ const updateTaskValidator = [
     body("lockedAt")
         .trim()
         .notEmpty().withMessage('Task lock time can\'t be empty')
+        .custom((value) => {
+            const lockTime = new Date(value);
+            const now = new Date();
+
+            if (lockTime <= now) {
+                throw new Error('Task lock time must be in the future');
+            }
+
+            return true;
+        })
 ];
 
 const updateTaskStatusValidator = [

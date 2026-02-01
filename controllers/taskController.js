@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import { v4 as uuidv4 } from 'uuid';
-import { createTask, updateTask, getTasksForNode, getTasksByStatus, getTaskDetails, updateTaskStatus, assignTask, deleteTask } from '../services/taskService.js';
+import { createTask, updateTask, getTasksByStatus, getTaskDetails, updateTaskStatus, assignTask, deleteTask } from '../services/taskService.js';
 
 // @desc    Get all tasks with pagination
 // @route   GET/api/tasks/all
@@ -10,10 +10,11 @@ const getAllTasks = asyncHandler(async (req, res) => {
     const { cursor, limit } = req.query;
     let dataCount = parseInt(limit) || 10;
 
-    const {tasks, nextCursor} = await getTasksByStatus('all', null, dataCount, cursor);
+    const {data, nextCursor} = await getTasksByStatus('all', null, dataCount, cursor);
+
     return res.status(200).json({
         success: 'Success',
-        tasks,
+        tasks: data,
         nextCursor,
     });
 })
@@ -27,10 +28,10 @@ const getNodeTasks = asyncHandler(async (req, res) => {
     const userId = req.userId;
     const dataCount = parseInt(limit) || 10;
 
-    const {tasks, nextCursor} = await getTasksForNode(userId, dataCount, cursor);
+    const {data, nextCursor} = await getTasksByStatus('all', userId, dataCount, cursor);
     res.status(200).json({
         message: 'Success',
-        tasks,
+        tasks: data,
         nextCursor,
     })
 })
@@ -45,10 +46,10 @@ const filterTasksByStatus = asyncHandler(async (req, res) => {
     const { cursor, limit } = req.query;
     const dataCount = parseInt(limit) || 10;
 
-    const {tasks, nextCursor} = await getTasksByStatus(taskStatus, userId, dataCount, cursor);
+    const {data, nextCursor} = await getTasksByStatus(taskStatus, userId, dataCount, cursor);
     res.status(200).json({
         message: 'Sucess',
-        tasks,
+        tasks: data,
         nextCursor
     })
 })
@@ -58,7 +59,8 @@ const filterTasksByStatus = asyncHandler(async (req, res) => {
 // @access  Privte(Admin/Node)
 const getTaskDetail = asyncHandler(async (req, res) => {
     const taskId = req.params.taskId;
-    const taskDetails = await getTaskDetails(taskId);
+    const userId = req.userRole === 'admin'? null : req.userId;
+    const taskDetails = await getTaskDetails(taskId, userId);
 
     res.status(200).json({
         message: 'Sucess',
