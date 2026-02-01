@@ -10,7 +10,7 @@ import { selectFields } from 'express-validator/lib/field-selection.js';
 // @desc    Log in to user account
 // @route   POST/api/auth/login
 // @access  Private(Admin)
-// @params  email*, password*
+// @params  username*, password*
 const signin = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
 
