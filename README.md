@@ -1,4 +1,4 @@
-# Distributed Task System
+# Task Management System
 
 A secure, and scalable **distributed task processing system** built with **Node.js, Express, Sequelize, and MySQL**. Tasks are **explicitly assigned to worker nodes**, and **only the assigned node** is allowed to fetch, process, and update those tasks.
 
