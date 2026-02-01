@@ -4,7 +4,7 @@ A secure, and scalable **distributed task processing system** built with **Node.
 
 This project is designed with **real‑world backend practices** in mind and follows a clean **MVC + Service Layer architecture**.
 
-## 📌 Table of Contents
+## Table of Contents
 
 - [Key Features](#key-features)
 - [Project Architecture](#project-architecture)
