@@ -1,6 +1,6 @@
 # Task Management System
 
-A secure, and scalable **distributed task processing system** built with **Node.js, Express, Sequelize, and MySQL**. Tasks are **explicitly assigned to worker nodes**, and **only the assigned node** is allowed to fetch, process, and update those tasks.
+A secure, and scalable **task management system** built with **Node.js, Express, Sequelize, and MySQL**. Tasks are **explicitly assigned to worker nodes**, and **only the assigned node** is allowed to fetch, process, and update those tasks.
 
 This project is designed with **real‑world backend practices** in mind and follows a clean **MVC + Service Layer architecture**.
 
