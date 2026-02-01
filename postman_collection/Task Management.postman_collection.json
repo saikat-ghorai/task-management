@@ -1,0 +1,749 @@
+{
+  "info": {
+    "_postman_id": "b45df6e3-2d9f-47bc-a642-941ffa9507cf",
+    "name": "Task Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34117578"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Create user",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Mr. Jana\",\r\n    \"email\": \"s.jana@taskm.com\",\r\n    \"password\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/signup",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "signup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Profile",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get user list",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NTM5MDIsImV4cCI6MTc3MDAwMzkwMn0.dQ4ij1U9kG5PXSrHZ0ibw-lZyb6_WCXmBJQWFrcvPxg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Suman Jana\",\r\n    \"email\": \"s.jana@taskm.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/edit-profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "edit-profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NTM5MDIsImV4cCI6MTc3MDAwMzkwMn0.dQ4ij1U9kG5PXSrHZ0ibw-lZyb6_WCXmBJQWFrcvPxg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"oldPassword\": \"S@12345678\",\r\n    \"newPassword\": \"12345678\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/update-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "update-password"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Get all tasks",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/009a8b73-5413-4218-a132-ceb3ec6d4548",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "009a8b73-5413-4218-a132-ceb3ec6d4548"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get tasks of a node",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "filter tasks",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/filter/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "filter",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update task status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"taskId\": \"009a8b73-5413-4218-a132-ceb3ec6d4548\",\r\n    \"taskStatus\": \"in_progress\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/shift-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "shift-status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign task",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"taskId\": \"009a8b73-5413-4218-a132-ceb3ec6d4548\",\r\n    \"nodeId\": \"8d6c2390-8fb0-41ea-b9fc-d88e464a1e0d\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/assign",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "assign"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const futureTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();\r",
+                  "const pastTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();\r",
+                  "pm.environment.set(\"futureTime\", futureTime);\r",
+                  "pm.environment.set(\"pastTime\", pastTime);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"taskId\": \"e2e16187-79e1-48e0-b0c3-62ad74259826\",\r\n    \"taskName\": \"Generate Monthly Report\",\r\n    \"taskDetails\": \"Generate and store monthly analytics report for admin dashboard.\",\r\n    \"assignedNode\": \"0f46b1c7-1f9d-4893-885e-f15755081ca7\",\r\n    \"lockedAt\": \"{{futureTime}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get task details",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/e2e16187-79e1-48e0-b0c3-62ad74259826",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "e2e16187-79e1-48e0-b0c3-62ad74259826"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get tasks of a node with cursor",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiMGY0NmIxYzctMWY5ZC00ODkzLTg4NWUtZjE1NzU1MDgxY2E3IiwidHlwZSI6Im5vZGUiLCJpYXQiOjE3Njk5NDgyMjIsImV4cCI6MTc2OTk5ODIyMn0.QPTLC8epJt13u6nn6Ab6w68iAi_KctsxVlfLm8YMV_c",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all tasks with cursor",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/all/?limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "all",
+                ""
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create task",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const futureTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();\r",
+                  "const pastTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();\r",
+                  "pm.environment.set(\"futureTime\", futureTime);\r",
+                  "pm.environment.set(\"pastTime\", pastTime);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"taskName\": \"Generate Monthly Report\",\r\n    \"taskDetails\": \"Generate and store monthly analytics report for admin dashboard.\",\r\n    \"assignedNode\": \"0f46b1c7-1f9d-4893-885e-f15755081ca7\",\r\n    \"lockedAt\": \"{{futureTime}}\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get task histroy",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/history/e2e16187-79e1-48e0-b0c3-62ad74259825",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "history",
+                "e2e16187-79e1-48e0-b0c3-62ad74259825"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CRON",
+      "item": [
+        {
+          "name": "Failed task collection",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyUm93IjoiYzFkM2JjZmYtMTQ1Zi00MTA5LTlkMDUtZTMxYjRmN2EwZTBlIiwidHlwZSI6ImFkbWluIiwiaWF0IjoxNzY5OTQzNTM2LCJleHAiOjE3Njk5OTM1MzZ9.6aq5v5MXSV70PsQZcd89cfap-WAkfwTfQ_UbuY6KtnY",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"taskId\": \"e2e16187-79e1-48e0-b0c3-62ad74259826\",\r\n    \"taskName\": \"Generate Monthly Report\",\r\n    \"taskDetails\": \"Generate and store monthly analytics report for admin dashboard.\",\r\n    \"assignedNode\": \"0f46b1c7-1f9d-4893-885e-f15755081ca7\",\r\n    \"lockedAt\": \"{{futureTime}}\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/cron/collect-failed",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "cron",
+                "collect-failed"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"username\": \"s.jana@taskm.com\",\r\n    \"password\": \"12345678\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
