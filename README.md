@@ -6,13 +6,13 @@ This project is designed with **real‑world backend practices** in mind and fol
 
 ## 📌 Table of Contents
 
-- [Key Features](#-key-features)
-- [Project Architecture](#-project-architecture)
-- [Database & ORM](#-database--orm)
-- [Environment Setup](#-environment-setup)
-- [Install Dependencies](#-install-dependencies-database-migration--seeding)
-- [Start the Application](#-start-the-application)
-- [API Documentation](#-api-documentation)
+- [Key Features](#key-features)
+- [Project Architecture](#project-architecture)
+- [Database & ORM](#database--orm)
+- [Environment Setup](#environment-setup)
+- [Install Dependencies](#install-dependencies-database-migration--seeding)
+- [Start the Application](#start-the-application)
+- [API Documentation](#api-documentation)
 
 ## Key Features
 
